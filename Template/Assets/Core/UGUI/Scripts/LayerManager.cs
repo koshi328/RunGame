@@ -49,6 +49,7 @@ namespace GameSystem.UI
 				rect.offsetMax = new Vector2(1, 1);
 				rect.offsetMin = new Vector2(0, 0);
 				m_layerInfos[i] = new LayerInfo(root, layer);
+				root.SetActive(false);
 			}
 		}
 

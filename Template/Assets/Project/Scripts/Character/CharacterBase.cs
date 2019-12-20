@@ -25,11 +25,6 @@ namespace Character
 		public abstract void OnAction(IAction action);
 
 		public abstract void UpdateSelf();
-
-		private void Update()
-		{
-			UpdateSelf();
-		}
 	}
 
 	/// <summary>

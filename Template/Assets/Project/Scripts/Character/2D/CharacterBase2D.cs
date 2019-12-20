@@ -17,6 +17,11 @@ namespace Character
 		protected IMoveSystem _currentMoveSystem;
 		public IMoveSystem currentMoveSystem { get { return _currentMoveSystem; } }
 
+		protected virtual void Start()
+		{
+			rigidbody.velocity = Vector2.zero;
+		}
+
 		public void ChangeMoveSystem(IMoveSystem system)
 		{
 			_currentMoveSystem = system;

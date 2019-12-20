@@ -25,6 +25,8 @@ namespace Character
 
 		public MoveSystem_Normal2D(CharacterBase2D character)
 		{
+			fallingSpeed = 0.0f;
+
 			this.character = character;
 			body = new ObjectBody2D(character.collider);
 		}
@@ -38,6 +40,7 @@ namespace Character
 			// ジャンプ処理
 			if(requestJump && jumpCount < maxJumpCount)
 			{
+				requestJump = false;
 				fallingSpeed = jumpPower;
 				if(isGround)
 				{
@@ -63,7 +66,7 @@ namespace Character
 					if(fallingSpeed >= Constants.Max_FallingSpeed)
 					{
 						fallingSpeed -= Constants.Normal_Gravity * Time.deltaTime;
-						if(fallingSpeed >= Constants.Max_FallingSpeed) fallingSpeed = Constants.Max_FallingSpeed;
+						if(fallingSpeed <= Constants.Max_FallingSpeed) fallingSpeed = Constants.Max_FallingSpeed;
 					}
 
 					if(body.IsRight || body.IsLeft)
@@ -111,9 +114,9 @@ namespace Character
 			UnityEditor.EditorGUILayout.LabelField("ジャンプ回数");
 			maxJumpCount = UnityEditor.EditorGUILayout.IntSlider(maxJumpCount, 0, 5);
 			UnityEditor.EditorGUILayout.LabelField("ジャンプ力");
-			jumpPower = UnityEditor.EditorGUILayout.Slider(jumpPower, 0, 1);
+			jumpPower = UnityEditor.EditorGUILayout.Slider(jumpPower, 0, 10);
 			UnityEditor.EditorGUILayout.LabelField("移動速度");
-			moveSpeed = UnityEditor.EditorGUILayout.Slider(moveSpeed, 0, 5);
+			moveSpeed = UnityEditor.EditorGUILayout.Slider(moveSpeed, 0, 10);
 		}
 #endif
 	}
