@@ -104,5 +104,17 @@ namespace Character
 			position.y += velocity.y + fallingSpeed;
 			character.rigidbody.position = position;
 		}
+
+#if UNITY_EDITOR
+		void IMoveSystem._OnInspector()
+		{
+			UnityEditor.EditorGUILayout.LabelField("ジャンプ回数");
+			maxJumpCount = UnityEditor.EditorGUILayout.IntSlider(maxJumpCount, 0, 5);
+			UnityEditor.EditorGUILayout.LabelField("ジャンプ力");
+			jumpPower = UnityEditor.EditorGUILayout.Slider(jumpPower, 0, 1);
+			UnityEditor.EditorGUILayout.LabelField("移動速度");
+			moveSpeed = UnityEditor.EditorGUILayout.Slider(moveSpeed, 0, 5);
+		}
+#endif
 	}
 }

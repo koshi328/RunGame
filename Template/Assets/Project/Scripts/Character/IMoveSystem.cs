@@ -12,6 +12,10 @@ namespace Character
 		IAction currentAction { get; set; }
 
 		void Update();
+
+#if UNITY_EDITOR
+		void _OnInspector();
+#endif
 	}
 
 	public static class Constants

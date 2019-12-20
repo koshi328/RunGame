@@ -18,4 +18,20 @@ namespace Character
 			ChangeMoveSystem(moveSystem);
 		}
 	}
+
+#if UNITY_EDITOR
+	[UnityEditor.CustomEditor(typeof(PlayerCharacter))]
+	public class PlayerCharacterEditor : UnityEditor.Editor
+	{
+		public override void OnInspectorGUI()
+		{
+			var info = (CharacterBase2D)target;
+			DrawDefaultInspector();
+			if(info.currentMoveSystem != null)
+			{
+				info.currentMoveSystem._OnInspector();
+			}
+		}
+	}
+#endif
 }
