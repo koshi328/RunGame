@@ -11,6 +11,8 @@ namespace CameraSystem
 
 		List<ITransformEffect> m_transformEffect;
 
+		protected Camera targetCamera;
+
 		public Vector3 CameraDirection { get { return Camera.main.transform.forward; } }
 
 		/// <summary>
@@ -32,7 +34,6 @@ namespace CameraSystem
 		public void Awake()
 		{
 			m_transformEffect = new List<ITransformEffect>();
-			ChangeMode(new Default_CameraController(new Vector3(0, 3, -10), Quaternion.identity));
 		}
 
 		public void AddEffect(ITransformEffect effect)
@@ -42,9 +43,13 @@ namespace CameraSystem
 
 		public void ChangeMode(ICameraController controller)
 		{
-			m_current?.OnFinalize(Camera.main);
+			if(targetCamera == null)
+			{
+				targetCamera = Camera.main;
+			}
+			m_current?.OnFinalize(targetCamera);
 			m_current = controller;
-			m_current?.OnInitialize(Camera.main);
+			m_current?.OnInitialize(targetCamera);
 		}
 
 		public void Stash(ICameraController controller)
@@ -61,10 +66,16 @@ namespace CameraSystem
 
 		public void Run()
 		{
-			m_current.OnUpdate(Camera.main);
+			if(m_current == null) return;
+
+			if(targetCamera == null)
+			{
+				targetCamera = Camera.main;
+			}
+			m_current.OnUpdate(targetCamera);
 			m_transformEffect.RemoveAll((eff) =>
 			{
-				return eff.UpdateOrRemove(Camera.main);
+				return eff.UpdateOrRemove(targetCamera);
 			});
 		}
 	}
@@ -108,7 +119,7 @@ namespace CameraSystem
 			float total = 0.0f;
 			for(int i = 1; i < intensity + 1; ++i)
 			{
-				m_curve.AddKey(total,  0.0f);
+				m_curve.AddKey(total, 0.0f);
 				total += once * 0.25f;
 				m_curve.AddKey(total, -1.0f);
 				total += once * 0.5f;
