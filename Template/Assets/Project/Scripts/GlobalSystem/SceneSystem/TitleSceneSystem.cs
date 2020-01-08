@@ -2,42 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TitleSceneSystem : ISceneSystem
+public class TitleSceneSystem : SceneSystemAbstract
 {
 	public const string name = "Title";
-	string ISceneSystem.SceneName { get { return name; } }
+	public override string SceneName { get { return name; } }
 
 	private void OnActiveScene()
 	{
 
 	}
 
-	void ISceneSystem.OnUpdate()
+	public override void OnUpdate()
 	{
 		Debug.Log("T:Update");
 
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
-			SystemManager.Instance.ChangeScene(new GameSceneSystem());
+			SceneSystemManager.Instance.ChangeScene(new GameSceneSystem());
 		}
 	}
 
-	void ISceneSystem.OnBeginLoad()
-	{
-
-	}
-
-	void ISceneSystem.OnLoading(float progress)
+	public override void OnLoading(float progress)
 	{
 		Debug.Log("T:Loading");
 	}
 
-	void ISceneSystem.OnEndLoad()
+	public override void OnEndLoad()
 	{
 		OnActiveScene();
 	}
 
-	void ISceneSystem.OnDiscard()
+	public override void OnDiscard()
 	{
 		Debug.Log("T:Discard");
 	}

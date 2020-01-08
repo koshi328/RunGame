@@ -7,65 +7,31 @@ namespace Character
 {
 	public class CharacterBase2D : CharacterBase
 	{
+		[SerializeField]
+		Animator _animator;
+
+		int SlidingHash;
+
 		// キャッシュ ----------------------
-		private Collider2D _collider;
-		private Rigidbody2D _cacheRigidbody;
-		public new Collider2D collider { get { return _collider ?? (_collider = GetComponent<Collider2D>()); } }
+		protected BoxCollider2D _collider;
+		protected Rigidbody2D _cacheRigidbody;
+		protected SpriteRenderer _avatarSprite;
+		public new BoxCollider2D collider { get { return _collider ?? (_collider = GetComponent<BoxCollider2D>()); } }
 		public new Rigidbody2D rigidbody { get { return _cacheRigidbody ?? (_cacheRigidbody = GetComponent<Rigidbody2D>()); } }
+		public SpriteRenderer avatarSprite { get { return _avatarSprite ?? (_avatarSprite = GetComponentInChildren<SpriteRenderer>()); } }
 		// ---------------------------------
 
-		protected IMoveSystem _currentMoveSystem;
-		public IMoveSystem currentMoveSystem { get { return _currentMoveSystem; } }
-
+		
 		protected virtual void Start()
 		{
 			rigidbody.velocity = Vector2.zero;
+
+			SlidingHash = Animator.StringToHash("sliding");
 		}
-
-		public void ChangeMoveSystem(IMoveSystem system)
+		
+		public void SlidingPose(bool enable)
 		{
-			_currentMoveSystem = system;
-		}
-
-		public override void OnMove(in Vector2 direction)
-		{
-			if(_currentMoveSystem != null)
-			{
-				_currentMoveSystem.inputDirection = direction;
-			}
-		}
-
-		public override void OnAvoidance(in Vector2 direction)
-		{
-			if(_currentMoveSystem != null)
-			{
-				_currentMoveSystem.avoidanceDirection = direction;
-			}
-		}
-
-		public override void OnJump(float value)
-		{
-			if(_currentMoveSystem != null)
-			{
-				_currentMoveSystem.requestJump = true;
-			}
-		}
-
-		public override void OnAction(IAction action)
-		{
-			if(_currentMoveSystem != null)
-			{
-				_currentMoveSystem.currentAction = action;
-			}
-
-		}
-
-		public override void UpdateSelf()
-		{
-			if(_currentMoveSystem != null)
-			{
-				_currentMoveSystem.Update();
-			}
+			_animator.SetBool(SlidingHash, enable);
 		}
 	}
 }

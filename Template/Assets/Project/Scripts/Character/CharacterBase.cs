@@ -11,20 +11,62 @@ namespace Character
 		public new Transform transform { get { return m_cacheTransform ?? (m_cacheTransform = gameObject.transform); } }
 		// ---------------------------------
 
-		protected virtual void Awake()
-		{
+		protected IAction currentAction;
 
+		protected IMoveSystem _currentMoveSystem;
+		public IMoveSystem currentMoveSystem { get { return _currentMoveSystem; } }
+
+		public virtual void ChangeMoveSystem(IMoveSystem system)
+		{
+			_currentMoveSystem = system;
 		}
 
-		public abstract void OnMove(in Vector2 direction);
+		public virtual void OnMove(in Vector2 direction)
+		{
+			if(_currentMoveSystem != null)
+			{
+				_currentMoveSystem.inputDirection = direction;
+			}
+		}
 
-		public abstract void OnAvoidance(in Vector2 direction);
+		public virtual void OnAvoidance(in Vector2 direction)
+		{
+			if(_currentMoveSystem != null)
+			{
+				_currentMoveSystem.avoidanceDirection = direction;
+			}
+		}
 
-		public abstract void OnJump(float value);
+		public virtual void OnJump(float value)
+		{
+			if(_currentMoveSystem != null)
+			{
+				_currentMoveSystem.requestJump = true;
+			}
+		}
 
-		public abstract void OnAction(IAction action);
+		public virtual void OnAction(IAction action)
+		{
+			currentAction?.End(this);
+			currentAction = action;
+			currentAction?.Start(this);
+		}
 
-		public abstract void UpdateSelf();
+		public virtual void UpdateSelf()
+		{
+			if(_currentMoveSystem != null)
+			{
+				_currentMoveSystem.Update();
+			}
+
+			if(currentAction != null)
+			{
+				if(!currentAction.Execute(this))
+				{
+					currentAction.End(this);
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -32,6 +74,8 @@ namespace Character
 	/// </summary>
 	public interface IAction
 	{
-
+		void Start(CharacterBase character);
+		bool Execute(CharacterBase character);
+		void End(CharacterBase character);
 	}
 }

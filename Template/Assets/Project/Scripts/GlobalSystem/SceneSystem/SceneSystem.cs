@@ -3,29 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public interface ISceneSystem
+public class SceneSystemManager : SingletonBehaviour<SceneSystemManager>
 {
-	string SceneName { get; }
-	void OnUpdate();
-	void OnBeginLoad();
-	void OnLoading(float progress);
-	void OnEndLoad();
-	void OnDiscard();
-}
-
-public class SceneSystemManager
-{
-	ISceneSystem current;
+	SceneSystemAbstract current;
 
 	bool nowLoading;
 
-	public SceneSystemManager()
+	public void Initialize()
 	{
 		current = FirstScene();
 		current?.OnEndLoad();
 	}
 
-	public IEnumerator ChangeScene(ISceneSystem nextScene)
+	public IEnumerator ChangeScene(SceneSystemAbstract nextScene)
 	{
 		nowLoading = true;
 
@@ -43,16 +33,21 @@ public class SceneSystemManager
 		nowLoading = false;
 	}
 
-	public void Update()
+	public void OnUpdate()
 	{
 		if(current != null) current.OnUpdate();
+	}
+
+	public void OnLateUpdate()
+	{
+		if(current != null) current.OnLateUpdate();
 	}
 
 	/// <summary>
 	/// 起動時のシーンはUnity側で生成されるので
 	/// アクティブシーンから推測でシステムを割り当てる
 	/// </summary>
-	private ISceneSystem FirstScene()
+	private SceneSystemAbstract FirstScene()
 	{
 		string name = SceneManager.GetActiveScene().name;
 		switch(name)
@@ -62,4 +57,15 @@ public class SceneSystemManager
 		}
 		return null;
 	}
+}
+
+public abstract class SceneSystemAbstract
+{
+	public virtual string SceneName { get; }
+	public virtual void OnUpdate() { }
+	public virtual void OnLateUpdate() { }
+	public virtual void OnBeginLoad() { }
+	public virtual void OnLoading(float progress) { }
+	public virtual void OnEndLoad() { }
+	public virtual void OnDiscard() { }
 }

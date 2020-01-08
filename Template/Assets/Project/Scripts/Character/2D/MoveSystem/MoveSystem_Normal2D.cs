@@ -14,8 +14,7 @@ namespace Character
 		public Vector2 inputDirection { get; set; }
 		public bool requestJump { get; set; }
 		public Vector2 avoidanceDirection { get; set; }
-		public IAction currentAction { get; set; }
-
+		
 		protected CharacterBase2D character;
 		protected ObjectBody2D body;
 

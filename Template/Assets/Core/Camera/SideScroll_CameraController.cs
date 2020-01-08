@@ -19,7 +19,9 @@ namespace CameraSystem
 		}
 		public void OnUpdate(Camera camera)
 		{
-			camera.transform.position = Vector3.Lerp(camera.transform.position, _target.transform.position + _offset, 0.1f);
+			var pos = _offset;
+			pos.x = _target.transform.position.x;
+			camera.transform.position = pos;
 		}
 
 		public void OnFinalize(Camera camera)

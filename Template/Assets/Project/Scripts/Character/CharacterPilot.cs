@@ -26,15 +26,39 @@ namespace Character
 		{
 			if(m_character == null) return;
 
-			inputDirection.x = Input.GetAxisRaw("Horizontal");
-			inputDirection.y = Input.GetAxisRaw("Vertical");
-
-			m_character.OnMove(inputDirection);
-
-			if(Input.GetKeyDown(KeyCode.Space))
+			if(Input.GetKeyDown(KeyCode.UpArrow))
 			{
 				m_character.OnJump(1.0f);
 			}
+
+			if(Input.GetKeyDown(KeyCode.DownArrow))
+			{
+				m_character.OnAction(new SlidingAction());
+			}
+		}
+	}
+
+	public class SlidingAction : IAction
+	{
+		void IAction.Start(CharacterBase character)
+		{
+			var target = (CharacterBase2D)character;
+			target.SlidingPose(true);
+		}
+
+		bool IAction.Execute(CharacterBase character)
+		{
+			if(!Input.GetKey(KeyCode.DownArrow))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		void IAction.End(CharacterBase character)
+		{
+			var target = (CharacterBase2D)character;
+			target.SlidingPose(false);
 		}
 	}
 }

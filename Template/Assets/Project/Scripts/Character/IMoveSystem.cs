@@ -9,7 +9,6 @@ namespace Character
 		Vector2 inputDirection { get; set; }
 		bool requestJump { get; set; }
 		Vector2 avoidanceDirection { get; set; }
-		IAction currentAction { get; set; }
 
 		void Update();
 

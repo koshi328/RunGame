@@ -26,17 +26,18 @@ public class SystemManager : SingletonBehaviour<SystemManager>
 		audioManager = AudioManager.Instance;
 		uiManager = UIManager.Instance;
 		cameraManager = CameraManager.Instance;
-		sceneSystemManager = new SceneSystemManager();
+		sceneSystemManager = SceneSystemManager.Instance;
+		sceneSystemManager.Initialize();
 	}
 
 	private void Update()
 	{
 		cameraManager.Run();
-		sceneSystemManager.Update();
+		sceneSystemManager.OnUpdate();
 	}
 
-	public void ChangeScene(ISceneSystem nextScene)
+	private void LateUpdate()
 	{
-		StartCoroutine(sceneSystemManager.ChangeScene(nextScene));
+		sceneSystemManager.OnLateUpdate();
 	}
 }
