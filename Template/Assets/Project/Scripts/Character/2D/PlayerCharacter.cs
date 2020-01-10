@@ -7,8 +7,16 @@ namespace Character
 	public class PlayerCharacter : CharacterBase2D
 	{
 		MoveSystem_SideRun2D moveSystem;
+		
+		public bool IsGameOver { get; set; }
+
+		protected float gameOverTime = 0.0f;
+		protected Vector3 previousPosition;
+
 		protected void Awake()
 		{
+			IsGameOver = false;
+
 			moveSystem = new MoveSystem_SideRun2D(this);
 			moveSystem.moveSpeed = 0.0f;
 			moveSystem.maxJumpCount = 1;
@@ -20,6 +28,27 @@ namespace Character
 		public void SetMoveSpeed(float speed)
 		{
 			moveSystem.moveSpeed = speed;
+		}
+
+		public override void UpdateSelf()
+		{
+			base.UpdateSelf();
+
+			if((previousPosition - transform.position).sqrMagnitude < Time.deltaTime)
+			{
+				gameOverTime += Time.deltaTime;
+			}
+			else
+			{
+				gameOverTime = 0.0f;
+			}
+
+			if(gameOverTime >= Time.fixedDeltaTime * 10)
+			{
+				IsGameOver = true;
+			}
+
+			previousPosition = transform.position;
 		}
 	}
 

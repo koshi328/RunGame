@@ -6,6 +6,7 @@ namespace Character
 {
 	public class MoveSystem_SideRun2D : IMoveSystem
 	{
+
 		public int maxJumpCount { get; set; }
 		public float moveSpeed { get; set; }
 		public float jumpPower { get; set; }

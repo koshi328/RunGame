@@ -9,6 +9,8 @@ public class SceneSystemManager : SingletonBehaviour<SceneSystemManager>
 
 	bool nowLoading;
 
+	public SceneSystemAbstract Current { get { return current; } }
+
 	public void Initialize()
 	{
 		current = FirstScene();
@@ -20,7 +22,7 @@ public class SceneSystemManager : SingletonBehaviour<SceneSystemManager>
 		nowLoading = true;
 
 		var operation = SceneManager.LoadSceneAsync(nextScene.SceneName, LoadSceneMode.Single);
-		nextScene.OnBeginLoad();
+		yield return nextScene.OnBeginLoad();
 		while(!operation.isDone)
 		{
 			nextScene.OnLoading(operation.progress);
@@ -64,7 +66,7 @@ public abstract class SceneSystemAbstract
 	public virtual string SceneName { get; }
 	public virtual void OnUpdate() { }
 	public virtual void OnLateUpdate() { }
-	public virtual void OnBeginLoad() { }
+	public virtual IEnumerator OnBeginLoad() { yield break; }
 	public virtual void OnLoading(float progress) { }
 	public virtual void OnEndLoad() { }
 	public virtual void OnDiscard() { }

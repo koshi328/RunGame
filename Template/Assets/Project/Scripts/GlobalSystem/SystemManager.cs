@@ -40,4 +40,9 @@ public class SystemManager : SingletonBehaviour<SystemManager>
 	{
 		sceneSystemManager.OnLateUpdate();
 	}
+
+	public Coroutine ChangeScene(SceneSystemAbstract sceneSystem)
+	{
+		return StartCoroutine(sceneSystemManager.ChangeScene(sceneSystem));
+	}
 }

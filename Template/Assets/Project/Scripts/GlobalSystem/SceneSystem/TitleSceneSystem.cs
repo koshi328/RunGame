@@ -7,33 +7,41 @@ public class TitleSceneSystem : SceneSystemAbstract
 	public const string name = "Title";
 	public override string SceneName { get { return name; } }
 
+	private bool alreadyCallChange;
+
 	private void OnActiveScene()
 	{
-
+		alreadyCallChange = false;
 	}
 
 	public override void OnUpdate()
 	{
-		Debug.Log("T:Update");
-
-		if(Input.GetKeyDown(KeyCode.Space))
+		if(alreadyCallChange) return;
+		if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetMouseButtonDown(0))
 		{
-			SceneSystemManager.Instance.ChangeScene(new GameSceneSystem());
+			alreadyCallChange = true;
+			SystemManager.Instance.ChangeScene(new GameSceneSystem());
 		}
 	}
 
 	public override void OnLoading(float progress)
 	{
-		Debug.Log("T:Loading");
+
+	}
+
+	public override IEnumerator OnBeginLoad()
+	{
+		yield return GameSystem.UI.SimpleFade.FadeIn();
 	}
 
 	public override void OnEndLoad()
 	{
+		GameSystem.UI.SimpleFade.FadeOut();
 		OnActiveScene();
 	}
 
 	public override void OnDiscard()
 	{
-		Debug.Log("T:Discard");
+
 	}
 }

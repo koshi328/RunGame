@@ -14,11 +14,12 @@ public class MapController : MonoBehaviour
 		BigCoin,
 	}
 
-	List<GameObject> data;
+	List<MapChipBase> data;
 
 	GameObject[] chipAsset;
 
 	public float endLine;
+	
 
 	public static MapController Create()
 	{
@@ -38,7 +39,7 @@ public class MapController : MonoBehaviour
 			Resources.Load("Prefabs/Stage/Coin") as GameObject,
 		};
 
-		data = new List<GameObject>();
+		data = new List<MapChipBase>();
 	}
 
 	public void Load(string fileName)
@@ -49,9 +50,11 @@ public class MapController : MonoBehaviour
 		{
 			using(var reader = new System.IO.StreamReader(open))
 			{
+				int baseHeight = -1;
 				endLine = 0;
 				for(int i = 0; !reader.EndOfStream; ++i)
 				{
+					++baseHeight;
 					var line = reader.ReadLine().Split(',');
 					for(int j = 0; j < line.Length; ++j)
 					{
@@ -59,23 +62,42 @@ public class MapController : MonoBehaviour
 						if((ChipType)index == ChipType.None) continue;
 						var chip = Instantiate(chipAsset[index]);
 						chip.transform.position = new Vector2(j, -i);
-						data.Add(chip);
+						data.Add(chip.GetComponent<MapChipBase>());
 
 						if(endLine < j) endLine = j;
 					}
 				}
-				endLine -= 5;
+
+				var begin = Instantiate(chipAsset[(int)ChipType.Floor]);
+				begin.transform.position = new Vector3(-10, -baseHeight, 0);
+				begin.transform.localScale = new Vector3(20, 1, 1);
+
+				var end = Instantiate(chipAsset[(int)ChipType.Floor]);
+				end.transform.position = new Vector3(endLine + 10, -baseHeight, 0);
+				end.transform.localScale = new Vector3(20, 1, 1);
+
+				endLine += 3;
 			}
+		}
+	}
+
+	protected void InitializeMap()
+	{
+		foreach(var chip in data)
+		{
+			chip.Initialize();
 		}
 	}
 
 	public void CheckLoop(Character.PlayerCharacter player)
 	{
 		if(!player) return;
-		var position = player.rigidbody.position;
+		var position = player.transform.position;
 		if(position.x < endLine) return;
 		position.x -= endLine;
-		player.rigidbody.position = position;
+		player.transform.position = position;
+
+		InitializeMap();
 	}
 
 	public void Clear()
@@ -92,5 +114,13 @@ public class MapController : MonoBehaviour
 		//return Resources.Load(path) as TextAsset;
 		var path = (Application.streamingAssetsPath) + "/" + (fileName);
 		return System.IO.File.ReadAllBytes(path);
+	}
+}
+
+public class MapChipBase : MonoBehaviour
+{
+	public virtual void Initialize()
+	{
+
 	}
 }

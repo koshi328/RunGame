@@ -5,6 +5,13 @@ using Character;
 
 public class GameSceneSystem : SceneSystemAbstract
 {
+	private enum GameState
+	{
+		Wait,
+		Play,
+		GameOver,
+	}
+
 	public const string name = "Sample";
 	public override string SceneName { get { return name; } }
 
@@ -14,7 +21,7 @@ public class GameSceneSystem : SceneSystemAbstract
 
 	private float elapsedTime;
 	private float speedRate;
-	private bool isGameStart;
+	private GameState gameState;
 
 	private void OnActiveScene()
 	{
@@ -34,18 +41,31 @@ public class GameSceneSystem : SceneSystemAbstract
 
 	private IEnumerator StartFlow()
 	{
-		isGameStart = false;
+		gameState = GameState.Wait;
 		player.SetMoveSpeed(0.0f);
 
 		yield return new WaitForSeconds(2.0f);
 
 		player.SetMoveSpeed(8.0f);
-		isGameStart = true;
+		gameState = GameState.Play;
+	}
+
+	private IEnumerator GameOverFlow()
+	{
+		player.SetMoveSpeed(0.0f);
+		yield return new WaitForSeconds(2.0f);
+		CameraSystem.CameraManager.Instance.ChangeMode(new CameraSystem.Default_CameraController(new Vector3(0, 2, -10), Quaternion.identity));
+		SystemManager.Instance.ChangeScene(new TitleSceneSystem());
 	}
 
 	public override void OnLateUpdate()
 	{
-		if(isGameStart)
+		if(gameState == GameState.GameOver)
+		{
+			return;
+		}
+
+		if(gameState == GameState.Play)
 		{
 			elapsedTime += Time.deltaTime;
 
@@ -61,18 +81,32 @@ public class GameSceneSystem : SceneSystemAbstract
 			{
 				Time.timeScale = speedRate;
 			}
-		}
 
-		player?.UpdateSelf();
+			if(player != null)
+			{
+				player.UpdateSelf();
+				if(player.IsGameOver)
+				{
+					gameState = GameState.GameOver;
+					SystemManager.Instance.StartCoroutine(GameOverFlow());
+				}
+			}
+		}
+	}
+
+	public override IEnumerator OnBeginLoad()
+	{
+		yield return GameSystem.UI.SimpleFade.FadeIn();
 	}
 
 	public override void OnEndLoad()
 	{
+		GameSystem.UI.SimpleFade.FadeOut();
 		OnActiveScene();
 	}
 
 	public override void OnDiscard()
 	{
-		CameraSystem.CameraManager.Instance.ChangeMode(new CameraSystem.Default_CameraController(new Vector3(0, 2, -10), Quaternion.identity));
+		
 	}
 }

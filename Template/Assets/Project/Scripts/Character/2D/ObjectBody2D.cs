@@ -8,7 +8,7 @@ namespace Character
 	{
 		private static readonly int MAX_CONTACT = 5;
 		private static readonly Vector2 up = Vector2.up;
-		private static float slopes = 30;
+		private static float slopes = 0;
 
 		public bool IsHead { get; private set; }
 		public bool IsLeft { get; private set; }
@@ -23,6 +23,8 @@ namespace Character
 		GameObject _rideObject;
 		Vector3 _previousRidePosition;
 
+		Vector3 _previousPosition;
+
 		public ObjectBody2D(Collider2D collider)
 		{
 			ref_collider = collider;
@@ -31,6 +33,8 @@ namespace Character
 
 		public void Update()
 		{
+			Vector3 direction = (ref_collider.transform.position - _previousPosition).normalized;
+
 			IsPreviousGround = IsGround;
 			IsHead = false;
 			IsRight = false;
@@ -53,8 +57,8 @@ namespace Character
 					IsHead = true;
 				}
 
-				if(!IsRight) IsRight = angle >= slopes && angle <= 170;
-				if(!IsLeft) IsLeft = angle <= -slopes && angle >= -170;
+				if(!IsRight && direction.x > 0) IsRight = angle <= -30 && angle >= -150;
+				if(!IsLeft && direction.x < 0) IsLeft = angle >= 30 && angle <= 150;
 			}
 			if(IsGround)
 			{
@@ -72,6 +76,8 @@ namespace Character
 			{
 				_rideObject = null;
 			}
+
+			_previousPosition = ref_collider.transform.position;
 		}
 
 		public Vector2 GetDirection(float horizontal)
